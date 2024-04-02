@@ -2,4 +2,4 @@ streamlit==1.8.1
 pandas==1.4.2
 numpy==1.22.3
 plotly==5.6.0
-openpyxl==3.1.0  # Recommended for pd.read_excel() to work with .xlsx files
+openpyxl
