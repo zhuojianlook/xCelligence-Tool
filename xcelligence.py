@@ -197,9 +197,9 @@ def main():
     st.markdown("""
         ## Instructions
         
-        Instructions: (Make sure that the perimeter of the 96 well plate is not used & you must select a base-time for ratio transfomation or it will look like the app is not working)
+        (Make sure that the perimeter of the 96 well plate is not used & you must select a base-time for ratio transfomation or it will look like the app is not working)
         
-        1. **Upload your Excel file** using the 'Upload your Excel file' button, make sure you export the file with the layout sheet in the matrix format, then save the file as an .xlsx (not xls).
+        1. **Upload your Excel file** using the 'Browse files' button, make sure you export the file with the layout sheet in the matrix format, then save the file as an .xlsx (not xls).
         2. **Select wells to reject** from the multiselect dropdown, these can include wells that have obviously outlier readings or if you want to exclude replicates. Dropped cells will not be included in later calculations.
         3. **Choose the sample to normalize to** from the dropdown, e.g. triplicate of wells with no cells added.
         4. **Select the base-time for ratio transformation** follows the R package RTCA, select a base time where all wells will have a cell index of 1.
