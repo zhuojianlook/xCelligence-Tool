@@ -76,7 +76,9 @@ def format_time_index(time_index):
 
 
 def plot_average_bar_graph_at_time(data, sample_to_wells, selected_time_in_seconds, title='Average Sample Measurement', yaxis_title='Average Measurement'):
-    closest_time_idx = data.index.get_loc(selected_time_in_seconds, method='nearest')
+    # Replace get_loc with a manual method to find the closest index
+    abs_diff = np.abs(data.index.to_series() - selected_time_in_seconds)
+    closest_time_idx = abs_diff.argmin()
     actual_time_point = data.index[closest_time_idx]
 
     averages = []
@@ -93,20 +95,20 @@ def plot_average_bar_graph_at_time(data, sample_to_wells, selected_time_in_secon
             averages.append(avg)
             std_devs.append(std_dev)
 
+    # The rest of the function remains unchanged...
     # Create the bar graph with error bars for standard deviation
     fig = go.Figure(data=[
         go.Bar(
             x=samples,
             y=averages,
             error_y=dict(
-                type='data',  # Use actual data values for error bars
-                array=std_devs,  # Standard deviation values
-                visible=True,  # Make sure error bars are visible
-                color='gray',  # Customize error bars color here
-                thickness=1.5,  # Customize error bars thickness here
+                type='data',
+                array=std_devs,
+                visible=True,
+                color='gray',
+                thickness=1.5,
             ),
-            # Removing explicit color assignment to let Plotly manage colors automatically
-            width=0.4  # Customize bar width here
+            width=0.4
         )
     ])
 
@@ -122,6 +124,7 @@ def plot_average_bar_graph_at_time(data, sample_to_wells, selected_time_in_secon
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
 
 
 
