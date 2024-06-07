@@ -361,6 +361,7 @@ def plot_bar_chart(sample_data_df, summary_stats, fig_title, x_label, y_label, c
 
     # Add significance lines if Tukey test results are significant
     indicator_positions = []  # To track the positions of previous indicators
+    added_comparisons = set()  # To track added comparisons
     for _, row in summary_stats.iterrows():
         p_values_str = row['P-Value']
         if p_values_str != 'n.s.' and p_values_str != 'n.a.':
@@ -370,6 +371,9 @@ def plot_bar_chart(sample_data_df, summary_stats, fig_title, x_label, y_label, c
                 p_value = float(p_value)
                 group1, group2 = groups.split(' vs ')
                 if p_value < 0.05:
+                    sorted_groups = tuple(sorted([group1, group2]))
+                    if sorted_groups in added_comparisons:
+                        continue  # Skip if the comparison has already been added
                     x1 = list(sample_means.index).index(group1)
                     x2 = list(sample_means.index).index(group2)
                     y = max(sample_means[group1] + sample_errors[group1], sample_means[group2] + sample_errors[group2])
@@ -380,6 +384,7 @@ def plot_bar_chart(sample_data_df, summary_stats, fig_title, x_label, y_label, c
                         y += h  # Increment the y position to avoid overlap
 
                     indicator_positions.append(y)  # Add the new position
+                    added_comparisons.add(sorted_groups)  # Mark this comparison as added
                     ax.plot([x1, x2], [y+h, y+h], lw=1.5, c='black')  # Horizontal line only
                     ax.text((x1+x2)*.5, y+h, '*' if p_value < 0.05 else 'ns', ha='center', va='bottom', color='black')
 
@@ -422,6 +427,7 @@ def main():
         - Export an .xls file from the xCelligence Machine with the layout and in the 'matrix' format.
         - Save the .xls file as an .xlsx file.
         - Do not include '-', ':' and avoid special characters in the sample names.
+        - If loading multiple .xlsx files, they should have the same xCelligence measurement plate read time settings. Loading different times is Untested. 
         
         ### Step 1: Upload Excel Files
         - Click the "Upload Excel files" button.
