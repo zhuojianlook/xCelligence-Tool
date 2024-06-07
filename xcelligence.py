@@ -501,9 +501,9 @@ def main():
                 custom_color = st.color_picker("Pick a color", value='#000000', key=f"custom_color_{sample}")
                 custom_colors[sample] = custom_color
 
-            fig_title = st.text_input("Figure Title", value="Combined Line Graph")
+            fig_title = st.text_input("Figure Title", value="Normalized Cell Index vs Time")
             x_label = st.text_input("X-axis Label", value="Time (Hours)")
-            y_label = st.text_input("Y-axis Label", value="Cell Index")
+            y_label = st.text_input("Y-axis Label", value="Normalized Cell Index")
             use_palette = st.checkbox("Use preset palette", value=True)
             enhance_visibility = st.checkbox("Enhance point visibility", value=True)
             palette_options = list(sns.palettes.SEABORN_PALETTES.keys())
@@ -531,7 +531,7 @@ def main():
             selected_time_point = st.selectbox("Select time point for line graph (in hours):", options=time_points, key="line_graph_time_point_selection")
     
 
-            fig_title = st.text_input("Bar Chart Title", value="Title")
+            fig_title = st.text_input("Bar Chart Title", value="X Hours X Mins")
             x_label = st.text_input("X-axis Label", value="Conditions")
             y_label = st.text_input("Y-axis Label", value="Normalized Cell Index")
             fig_width = st.slider("Figure width", 5, 20, 12, key="bar_fig_width")
