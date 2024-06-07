@@ -533,7 +533,7 @@ def main():
 
             fig_title = st.text_input("Bar Chart Title", value="X Hours X Mins")
             x_label = st.text_input("X-axis Label", value="Conditions")
-            y_label = st.text_input("Y-axis Label", value="Normalized Cell Index")
+            y_label = st.text_input("Y-axis Label", value="Normalized Cell Index ")
             fig_width = st.slider("Figure width", 5, 20, 12, key="bar_fig_width")
             fig_height = st.slider("Figure height", 3, 15, 8, key="bar_fig_height")
             show_grid_bar = st.checkbox("Show Gridlines for Bar Graph", value=True)
