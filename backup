@@ -70,7 +70,7 @@ def normalize_to_sample(processed_data_pivot, sample_name):
 
 def perform_ratio_transformation(normalized_data, base_time_seconds):
     """Perform ratio transformation based on a specified base-time in seconds."""
-    time_diff = normalized_data.index.total_seconds() - base_time_seconds
+    time_diff = (normalized_data.index.total_seconds() - base_time_seconds)
     closest_time_idx = abs(time_diff).argmin()
     base_time_row = normalized_data.iloc[closest_time_idx]
     normalized_data = normalized_data.apply(pd.to_numeric, errors='coerce')
@@ -109,19 +109,6 @@ def sort_time_strings(time_strings):
         return hours * 60 + minutes  # Convert to total minutes for sorting
     
     return sorted(time_strings, key=parse_time_string)
-
-def get_significance_stars(p_value):
-    """Return the significance stars based on p-value."""
-    if p_value < 0.00005:
-        return '****'
-    elif p_value < 0.0005:
-        return '***'
-    elif p_value < 0.005:
-        return '**'
-    elif p_value < 0.05:
-        return '*'
-    else:
-        return 'ns'
 
 def plot_combined_data(combined_data, selected_samples, plot_average, show_std_dev, fig_title, x_label, y_label, palette, base_times, base_time_labels, dashes, show_grid, show_base_lines, custom_names, custom_colors, point_size, point_style, enhance_visibility, fig_width, fig_height):
     sns.set(font_scale=1.2)
@@ -401,7 +388,7 @@ def plot_bar_chart(sample_data_df, summary_stats, fig_title, x_label, y_label, c
                     indicator_positions.append(y)  # Add the new position
                     added_comparisons.add(sorted_groups)  # Mark this comparison as added
                     ax.plot([x1, x2], [y, y], lw=1.5, c='black')  # Horizontal line only
-                    ax.text((x1 + x2) * .5, y, get_significance_stars(p_value), ha='center', va='bottom', color='black')
+                    ax.text((x1 + x2) * .5, y, '*' if p_value < 0.05 else 'ns', ha='center', va='bottom', color='black')
 
     st.pyplot(fig)
     
@@ -468,7 +455,7 @@ def main():
 
         ### Step 6: Analyze Specific Time Points
         - Select a specific time point from the dropdown menu to generate a bar graph.
-        - Significance P $\leq$ {0.05, 0.005, 0.0005, 0.00005} = {* | ** | *** | ****} are automatically indicated.
+        - Significance <0.05 is automatically indicated. Further signficance levels (WIP)
         - Customize the bar graph appearance like in the line graph.
 
         ### Step 7: Download Results
