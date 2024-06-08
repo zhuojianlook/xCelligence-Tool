@@ -125,7 +125,7 @@ def get_significance_stars(p_value):
 
 def plot_combined_data(combined_data, selected_samples, plot_average, show_std_dev, fig_title, x_label, y_label, palette, base_times, base_time_labels, dashes, show_grid, show_base_lines, custom_names, custom_colors, point_size, point_style, enhance_visibility, fig_width, fig_height):
     sns.set(font_scale=1.2)
-    rcParams['font.family'] = 'Arial'
+    rcParams['font.family'] = 'arial'
     if show_grid:
         sns.set_style("whitegrid")
     else:
