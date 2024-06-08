@@ -456,7 +456,7 @@ def main():
         - Select a sample for normalization from the dropdown menu for each .xlsx file, usually this is the control.
         - Choose a base-time for ratio transformation.
         - The application will automatically process and adjust the time index for the uploaded files.
-        - 
+        
         ### Step 3: Adjust Settings
         - Use the controls to adjust various settings for your analysis.
         - You can toggle gridlines, adjust figure dimensions, and customize sample names and colors.
