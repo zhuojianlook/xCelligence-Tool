@@ -5,7 +5,7 @@ import seaborn as sns
 import io
 from functools import reduce
 import numpy as np
-import uuid 
+import uuid
 from matplotlib import rcParams
 import scipy.stats as stats
 from scipy.stats import f_oneway
@@ -149,15 +149,16 @@ def plot_combined_data(combined_data, selected_samples, plot_average, show_std_d
         
         # Define marker style
         edgecolor = 'black' if enhance_visibility else color
-        linewidth = 1.5 if enhance_visibility else 1.0
-        marker_style = {'marker': point_style, 'markersize': point_size, 'color': color, 'linestyle': '-', 'linewidth': linewidth, 'markeredgecolor': edgecolor}
+        linewidth = 1.0 if enhance_visibility else 0.5
+        white_outline_width = 1.5 if enhance_visibility else 1.0
+        marker_style = {'marker': point_style, 'markersize': point_size, 'color': color, 'linestyle': '-', 'linewidth': linewidth, 'markeredgewidth': white_outline_width, 'markeredgecolor': edgecolor, 'markerfacecolor': 'white'}
 
         # Plot either averaged data or individual data points
         if plot_average:
             mean_series = combined_data[f"{sample}_mean"]
             if show_std_dev:
                 std_series = combined_data[f"{sample}_std"]
-                ax.errorbar(time_hours, mean_series, yerr=std_series, fmt=point_style, label=f'{label} ± SD', capsize=5, **marker_style)
+                ax.errorbar(time_hours, mean_series, yerr=std_series, fmt=point_style, label=f'{label} ± SD', capsize=3, **marker_style)
             else:
                 ax.plot(time_hours, mean_series, label=label, **marker_style)
         else:
@@ -346,7 +347,7 @@ def print_sample_replicate_data(data, time_point, selected_samples):
 
     return sample_data_df, summary_stats
 
-def plot_bar_chart(sample_data_df, summary_stats, fig_title, x_label, y_label, custom_colors, custom_names, fig_width, fig_height, show_grid):
+def plot_bar_chart(sample_data_df, summary_stats, fig_title, x_label, y_label, custom_colors, custom_names, fig_width, fig_height, show_grid, custom_order, enhance_visibility):
     """Plot a bar chart of the sample data at a specific time point."""
     plt.rcParams['font.family'] = 'Arial'
     plt.rcParams['font.size'] = 12
@@ -356,11 +357,16 @@ def plot_bar_chart(sample_data_df, summary_stats, fig_title, x_label, y_label, c
         ax.grid(True, which='both', linestyle='--', linewidth=0.7)
     else:
         ax.grid(False)
-    
-    sample_means = summary_stats.set_index('Sample')['Mean']
-    sample_errors = summary_stats.set_index('Sample')['SD']
+
+    if custom_order:
+        sample_means = summary_stats.set_index('Sample').reindex(custom_order)['Mean']
+        sample_errors = summary_stats.set_index('Sample').reindex(custom_order)['SD']
+    else:
+        sample_means = summary_stats.set_index('Sample')['Mean']
+        sample_errors = summary_stats.set_index('Sample')['SD']
+
     sample_names = [custom_names.get(sample, sample) for sample in sample_means.index]
-    bars = sample_means.plot(kind='bar', yerr=sample_errors, ax=ax, capsize=5, color=[custom_colors[sample] for sample in sample_means.index], edgecolor='black', alpha=0.75)
+    bars = sample_means.plot(kind='bar', yerr=sample_errors, ax=ax, capsize=3, color=[custom_colors[sample] for sample in sample_means.index], edgecolor='black', alpha=0.75)
     
     ax.set_title(fig_title)
     ax.set_xlabel(x_label)
@@ -370,7 +376,7 @@ def plot_bar_chart(sample_data_df, summary_stats, fig_title, x_label, y_label, c
     # Overlay a scatter plot with jitter for replicates
     for i, sample in enumerate(sample_means.index):
         jittered_x = np.random.normal(i, 0.05, size=len(sample_data_df[sample_data_df['Sample'] == sample]))
-        ax.scatter(jittered_x, sample_data_df[sample_data_df['Sample'] == sample]['Value'], color='black', zorder=10)
+        ax.scatter(jittered_x, sample_data_df[sample_data_df['Sample'] == sample]['Value'], color='black', edgecolor='white', linewidth=1, zorder=10)
 
     # Add significance lines if Tukey test results are significant
     indicator_positions = []  # To track the positions of previous indicators
@@ -411,7 +417,6 @@ def plot_bar_chart(sample_data_df, summary_stats, fig_title, x_label, y_label, c
     buf.seek(0)
     download_key = f"download_bar_{uuid.uuid4()}"
     st.download_button(label="Download Bar Chart TIFF", data=buf, file_name="bar_chart.tiff", mime="image/tiff", key=download_key)
-
 
 def perform_statistical_analysis(data, samples):
     """Perform statistical analysis on the given data."""
@@ -552,7 +557,6 @@ def main():
             time_points = sort_time_strings(sorted(set(combined_adjusted_time_data.index)))
             selected_time_point = st.selectbox("Select time point for line graph (in hours):", options=time_points, key="line_graph_time_point_selection")
     
-
             fig_title = st.text_input("Bar Chart Title", value="X Hours X Mins")
             x_label = st.text_input("X-axis Label", value="Conditions")
             y_label = st.text_input("Y-axis Label", value="Normalized Cell Index ")
@@ -568,11 +572,13 @@ def main():
                 custom_name = st.text_input(f"Custom name for {sample}:", value=sample, key=f"custom_name_{sample}_bar")
                 custom_names[sample] = custom_name
 
+            custom_order_list = st.multiselect("Custom order of samples:", options=selected_samples, default=selected_samples)
+
             if st.button("Plot Bar Graph at Selected Timepoint"):
                 sample_data_df, summary_stats = print_sample_replicate_data(combined_adjusted_time_data, selected_time_point, selected_samples)
                 
                 if sample_data_df is not None and summary_stats is not None:
-                    plot_bar_chart(sample_data_df, summary_stats, fig_title, x_label, y_label, custom_bar_colors, custom_names, fig_width, fig_height, show_grid_bar)
+                    plot_bar_chart(sample_data_df, summary_stats, fig_title, x_label, y_label, custom_bar_colors, custom_names, fig_width, fig_height, show_grid_bar, custom_order_list, enhance_visibility)
 
 if __name__ == "__main__":
     main()
